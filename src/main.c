@@ -1,69 +1,36 @@
+#include "app.h"
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #include <stdio.h>
 
-static void glCallback(
-	GLenum source,
-	GLenum type,
-	GLuint id,
-	GLenum severity,
-	GLsizei length,
-	GLchar const* message,
-	void const* user_param
-)
+void init()
 {
-	fprintf(stderr, "%d: %s\n", id, message);
+	glClearColor(0.6f, 1.0f, 0.8f, 1.0f);
 }
 
-#define WIDTH 1024
-#define HEIGHT 768
+void render()
+{
+	glClear(GL_COLOR_BUFFER_BIT);
+}
 
 int main(int argc, char **argv)
 {
-	if (!glfwInit())
-	{
-		fprintf(stderr, "ERROR: Failed to initialize GLFW.\n");
-		return 1;
-	}
+	AppInfo app_info = {
+		.title = "Christian's 3D Rendering Engine",
+		.width = 1024,
+		.height = 768,
+		.gl_major_version = 4,
+		.gl_minor_version = 5
+	};
 
-	glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
-	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	App *app = App_make(&app_info);
+	if (!app) return 1;
 
-	GLFWwindow *window = glfwCreateWindow(WIDTH, HEIGHT, "c3d", NULL, NULL);
-	if (!window)
-	{
-		fprintf(stderr, "ERROR: Failed to create window.\n");
-		return 1;
-	}
+	App_run(app, &init, &render);
 
-	glfwMakeContextCurrent(window);
-
-	if (!gladLoadGLLoader(glfwGetProcAddress))
-	{
-		fprintf(stderr, "ERROR: Failed to intialize GLAD.\n");
-		return 1;
-	}
-
-	glEnable(GL_DEBUG_OUTPUT);
-	glDebugMessageCallback(glCallback, NULL);
-
-	glViewport(0, 0, WIDTH, HEIGHT);
-	glClearColor(0.6f, 1.0f, 0.8f, 1.0f);
-
-	while (!glfwWindowShouldClose(window))
-	{
-		glClear(GL_COLOR_BUFFER_BIT);
-
-		glfwSwapBuffers(window);
-		glfwPollEvents();
-	}
-
-	glfwDestroyWindow(window);
-	glfwTerminate();
+	App_free(app);
 
 	return 0;
 }
