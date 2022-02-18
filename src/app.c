@@ -33,7 +33,7 @@ App *App_make(const AppInfo *app_info)
 		return NULL;
 	}
 
-	App *app = malloc(sizeof * app);
+	App *app = malloc(sizeof *app);
 	if (!app) return NULL;
 
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
